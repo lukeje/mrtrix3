@@ -137,8 +137,8 @@ class Amp2SH { MEMALIGN(Amp2SH)
           sh2amp = C.sh2amp;
           if (get_rician_bias (sh2amp, noise.value()))
             break;
-          for (ssize_t n = 0; n < sh2amp.cols(); ++n)
-            sh2amp.col (n).array() *= w[n];
+          for (ssize_t n = 0; n < sh2amp.rows(); ++n)
+            sh2amp.row (n).array() *= w[n];
 
           s.noalias() = sh2amp.transpose() * ap;
           Q = sh2amp.transpose() * C.sh2amp;
