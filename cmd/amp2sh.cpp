@@ -159,12 +159,12 @@ class Amp2SH { MEMALIGN(Amp2SH)
     template <class AmpImageType>
       void get_amps (AmpImageType& amp, double& norm) {
         if (C.normalise) {
-          norm = 1.0;
+          norm = 0.0;
           for (size_t n = 0; n < C.bzeros.size(); n++) {
             amp.index(3) = C.bzeros[n];
             norm += amp.value ();
           }
-          norm = C.bzeros.size() / norm;
+          norm = norm ? C.bzeros.size() / norm : 1.0;
         }
 
         for (ssize_t n = 0; n < a.size(); n++) {
