@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2022 the MRtrix3 contributors.
+/* Copyright (c) 2008-2023 the MRtrix3 contributors.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -3693,7 +3693,7 @@ namespace MR
             fade = node_selection_settings.get_edge_associated_colour_fade();
             colour = node_selection_settings.get_edge_associated_colour();
           }
-          if (selected_nodes[edge.get_node_index (0)] & selected_nodes[edge.get_node_index (1)]) {
+          if (selected_nodes[edge.get_node_index (0)] && selected_nodes[edge.get_node_index (1)]) {
             fade = node_selection_settings.get_edge_selected_colour_fade();
             colour = node_selection_settings.get_edge_selected_colour();
           }
@@ -3706,7 +3706,7 @@ namespace MR
           float multiplier = node_selection_settings.get_edge_other_size_multiplier();
           if (selected_nodes[edge.get_node_index (0)] || selected_nodes[edge.get_node_index (1)])
             multiplier = node_selection_settings.get_edge_associated_size_multiplier();
-          if (selected_nodes[edge.get_node_index (0)] & selected_nodes[edge.get_node_index (1)])
+          if (selected_nodes[edge.get_node_index (0)] && selected_nodes[edge.get_node_index (1)])
             multiplier = node_selection_settings.get_edge_selected_size_multiplier();
           return (multiplier * edge.get_size());
         }
@@ -3717,7 +3717,7 @@ namespace MR
           float multiplier = node_selection_settings.get_edge_other_alpha_multiplier();
           if (selected_nodes[edge.get_node_index (0)] || selected_nodes[edge.get_node_index (1)])
             multiplier = node_selection_settings.get_edge_associated_alpha_multiplier();
-          if (selected_nodes[edge.get_node_index (0)] & selected_nodes[edge.get_node_index (1)])
+          if (selected_nodes[edge.get_node_index (0)] && selected_nodes[edge.get_node_index (1)])
             multiplier = node_selection_settings.get_edge_selected_alpha_multiplier();
           return (multiplier * edge.get_alpha());
         }
