@@ -131,31 +131,6 @@ def execute(): #pylint: disable=unused-variable
   grad_export_option = app.read_dwgrad_export_options()
 
 
-  eddyqc_path = None
-  eddyqc_files = [ 'eddy_parameters', 'eddy_movement_rms', 'eddy_restricted_movement_rms', \
-                   'eddy_post_eddy_shell_alignment_parameters', 'eddy_post_eddy_shell_PE_translation_parameters', \
-                   'eddy_outlier_report', 'eddy_outlier_map', 'eddy_outlier_n_stdev_map', 'eddy_outlier_n_sqr_stdev_map', \
-                   'eddy_movement_over_time' ]
-  if app.ARGS.eddyqc_text:
-    eddyqc_path = path.from_user(app.ARGS.eddyqc_text, False)
-  elif app.ARGS.eddyqc_all:
-    eddyqc_path = path.from_user(app.ARGS.eddyqc_all, False)
-    eddyqc_files.extend([ 'eddy_outlier_free_data.nii.gz', 'eddy_cnr_maps.nii.gz', 'eddy_residuals.nii.gz' ])
-  if eddyqc_path:
-    if os.path.exists(eddyqc_path):
-      if os.path.isdir(eddyqc_path):
-        if any(os.path.exists(os.path.join(eddyqc_path, filename)) for filename in eddyqc_files):
-          if app.FORCE_OVERWRITE:
-            app.warn('Output eddy QC directory already contains relevant files; these will be overwritten on completion')
-          else:
-            raise MRtrixError('Output eddy QC directory already contains relevant files (use -force to override)')
-      else:
-        if app.FORCE_OVERWRITE:
-          app.warn('Target for eddy QC output is not a directory; it will be overwritten on completion')
-        else:
-          raise MRtrixError('Target for eddy QC output exists, and is not a directory (use -force to override)')
-
-
   eddy_manual_options = []
   if app.ARGS.eddy_options:
     # Initially process as a list; we'll convert back to a string later
@@ -289,6 +264,37 @@ def execute(): #pylint: disable=unused-variable
   elif app.ARGS.eddy_slspec:
     app.warn('-eddy_slspec option provided, but "--mporder=" not provided via -eddy_options; '
              'slice specification file not imported as it would not be utilised by eddy')
+
+
+  eddyqc_path = None
+  eddyqc_files = [ 'eddy_parameters', 'eddy_movement_rms', 'eddy_restricted_movement_rms', \
+                    'eddy_post_eddy_shell_alignment_parameters', 'eddy_post_eddy_shell_PE_translation_parameters', \
+                    'eddy_outlier_report', 'eddy_outlier_map', 'eddy_outlier_n_stdev_map', 'eddy_outlier_n_sqr_stdev_map', \
+                    'eddy_movement_over_time' ]
+  if app.ARGS.eddyqc_text:
+    eddyqc_path = path.from_user(app.ARGS.eddyqc_text, False)
+  elif app.ARGS.eddyqc_all:
+    eddyqc_path = path.from_user(app.ARGS.eddyqc_all, False)
+    eddyqc_files.extend([ 'eddy_outlier_free_data.nii.gz', 'eddy_cnr_maps.nii.gz', 'eddy_residuals.nii.gz' ])
+
+    # eddy displacement fields produced if "--dfields" option provided to eddy
+    # file name suffix matches that in eddy source code
+    # these can be used to compute single-step interpolation transformations in combination with transformation matrices or other warp fields
+    # could look for "--dfields" argument to decide whether to add this long list of files
+    eddyqc_files.extend('%s.%03d.nii.gz' % ("eddy_displacement_fields", i+1) for i in range(dwi_num_volumes))
+  if eddyqc_path:
+    if os.path.exists(eddyqc_path):
+      if os.path.isdir(eddyqc_path):
+        if any(os.path.exists(os.path.join(eddyqc_path, filename)) for filename in eddyqc_files):
+          if app.FORCE_OVERWRITE:
+            app.warn('Output eddy QC directory already contains relevant files; these will be overwritten on completion')
+          else:
+            raise MRtrixError('Output eddy QC directory already contains relevant files (use -force to override)')
+      else:
+        if app.FORCE_OVERWRITE:
+          app.warn('Target for eddy QC output is not a directory; it will be overwritten on completion')
+        else:
+          raise MRtrixError('Target for eddy QC output exists, and is not a directory (use -force to override)')
 
 
   # Use new features of dirstat to query the quality of the diffusion acquisition scheme
